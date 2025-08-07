@@ -1,4 +1,4 @@
-# Bonds Explorer (Flutter)
+# TapInc
 
 A production-grade Flutter application to explore corporate bonds, view issuer details, and analyze financials. The app is optimized for performance, clean architecture, and responsive design.
 
