@@ -1,161 +1,205 @@
 # TapInc
 
-A production-grade Flutter application to explore corporate bonds, view issuer details, and analyze financials. The app is optimized for performance, clean architecture, and responsive design.
+> **Explore corporate bonds. View issuer details. Analyze financials.**
+
+[![Flutter](https://img.shields.io/badge/Framework-Flutter-blue?logo=flutter)](#) [![Dart](https://img.shields.io/badge/Language-Dart-0175C2?logo=dart)](#) [![License](https://img.shields.io/badge/License-MIT-lightgrey)](#)
+
+---
+
+A production-grade **Flutter** application to explore corporate bonds, view issuer details, and analyze issuer financials. The app is built for performance, clean architecture, and an outstanding mobile experience.
+
+<p align="center">
+  <img alt="TapInc screenshot" src=".github/screenshot-placeholder.png" style="max-width:420px; width:100%; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12)">
+</p>
+
+## 📥 Quick download — APK
+
+**Download the latest release APK:**
+
+* [TapInc v1.0 (APK) — Google Drive]([https://drive.google.com/file/d/1HfPr4XaAMWZYSaYXG3_gjD985YssxXmq/view?usp=drive_link](https://drive.google.com/file/d/11Q5OUrMKvYqtKeEFzw8BvlDpPTx1ueop/view?usp=sharing))
+
+> ⚠️ Install at your own risk: enable `Install unknown apps` for your device if needed.
+
+---
 
 ## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Directory Layout](#directory-layout)
-- [Tech Stack](#tech-stack)
-- [Environment & Configuration](#environment--configuration)
-- [Getting Started](#getting-started)
-- [Run, Build, and Analyze](#run-build-and-analyze)
-- [Data & Networking](#data--networking)
-- [UI & UX](#ui--ux)
-- [State Management](#state-management)
-- [Performance Optimizations](#performance-optimizations)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
+
+* [Overview](#overview)
+* [Highlights](#highlights)
+* [Features](#features)
+* [Architecture](#architecture)
+* [Directory Layout](#directory-layout)
+* [Tech Stack](#tech-stack)
+* [Environment & Configuration](#environment--configuration)
+* [Getting Started](#getting-started)
+* [Run, Build, and Analyze](#run-build-and-analyze)
+* [Data & Networking](#data--networking)
+* [UI & UX](#ui--ux)
+* [State Management](#state-management)
+* [Performance Optimizations](#performance-optimizations)
+* [Troubleshooting](#troubleshooting)
+* [Contributing](#contributing)
+* [License](#license)
+
+---
 
 ## Overview
-The app provides:
-- A bonds list with compact, responsive cards and instant client-side search.
-- Bond detail screen with tabs (Bond Info, ISIN Analysis, Pros & Cons).
-- Custom, responsive charts for EBITDA and Revenue with smart Y‑axis scaling.
-- Clean state management with BLoC and a layered architecture (domain/data/presentation).
+
+TapInc helps analysts and investors quickly browse corporate bonds, read issuer-level details, and inspect financial trends (Revenue / EBITDA) with interactive charts. The codebase follows clean architecture practices to keep UI, domain, and data concerns separated and testable.
+
+## ✨ Highlights
+
+* Polished, responsive UI for phones and tablets.
+* Instant local search with highlighted matches (no extra network while typing).
+* Interactive charts with tooltips, gridlines, and adaptive Y‑axis scaling.
+* Robust networking (retry, caching) and clear error handling.
 
 ## Features
-- Responsive UI for phones and tablets.
-- Search-as-you-type with highlighted matches (no API calls while typing).
-- Interactive charts (tooltips, grid, dynamic scaling).
-- Issuer details (lead manager, registrar, etc.).
-- Error handling with fallbacks and snackbars.
+
+* Compact, information-rich bond cards (ISIN, issuer, rating, logo).
+* Bond detail page with tabs: **Bond Info**, **ISIN Analysis**, **Pros & Cons**.
+* Custom EBITDA & Revenue charts using `fl_chart` and smart scaling.
+* Soft in-memory caching and graceful fallbacks for offline-like UX.
+* BLoC-based state management with clear events & states.
 
 ## Architecture
-Clean, layered architecture:
-- Core: DI, networking, constants, failures.
-- Features: Each module has domain, data, and presentation layers.
-- State: BLoC pattern with feature-specific blocs/events/states.
+
+The project uses a layered architecture:
+
+* `core/` — DI, networking, constants, error models.
+* `features/` — feature folders (each with `domain/`, `data/`, `presentation/`).
+* `presentation/` — widgets, screens, and BLoCs live here.
+
+This keeps the app maintainable and easy to test.
 
 ## Directory Layout
+
 ```
 lib/
   core/
-    constants/            # AppConstants, build-time configuration, timeouts
-    di/                   # Dependency injection setup
-    error/                # Failure models
-    network/              # DioClient (retry, caching)
+    constants/
+    di/
+    error/
+    network/
   features/
     bonds_list/
-      data/               # Models, repositories (BondsRepositoryImpl)
-      domain/             # Entities, repository contracts
-      presentation/       # Screens, widgets, BLoC
+      data/
+      domain/
+      presentation/
     bond_detail/
-      data/               # Models, repository (BondDetailRepositoryImpl)
-      domain/             # Entities, contracts
-      presentation/       # Screen + tabs, widgets, BLoC
+      data/
+      domain/
+      presentation/
   main.dart
 ```
 
 ## Tech Stack
-- Flutter, Dart
-- State management: flutter_bloc
-- HTTP: Dio (logging in debug, retry-once on timeouts, in-memory GET cache)
-- Charts: fl_chart + custom rendering
-- DI: injectable/get_it
+
+* **Flutter** (stable)
+* **Dart**
+* `flutter_bloc` for state management
+* `dio` for HTTP with logging & retry
+* `fl_chart` for charts
+* `injectable` + `get_it` for DI
 
 ## Environment & Configuration
-Sensitive URLs are injected at build time via `--dart-define` (do not hardcode or commit them).
 
-Required keys:
-- `BASE_URL`
-- `BONDS_LIST_URL`
-- `BOND_DETAIL_URL`
+Sensitive URLs are injected at build time using `--dart-define`. Do not commit secrets.
 
-Create an env file (example path `assets/.env`):
+Create a file `assets/.env` with:
+
 ```
 BASE_URL=
 BONDS_LIST_URL=
 BOND_DETAIL_URL=
 ```
-Run with a file:
-```
+
+Run app (development):
+
+```bash
 flutter run --dart-define-from-file=assets/.env
 ```
 
-Note: Do NOT list `.env` in `pubspec.yaml` (it is not a runtime asset).
+> Tip: If you'd like `flutter run` to run without extra flags, create a short script (`run.sh` / `run.bat`) in your repo that calls the above command.
 
 ## Getting Started
-1. Install Flutter SDK and Dart.
-2. Fetch packages: `flutter pub get`
-3. Configure env (see above).
-4. Run on a device or emulator (see below).
+
+1. Install Flutter & Dart (see official docs).
+2. Run: `flutter pub get`.
+3. Set env vars in `assets/.env`.
+4. Launch on device/emulator.
 
 ## Run, Build, and Analyze
-- Run (debug):
-```
+
+* Debug run:
+
+```bash
 flutter run --dart-define-from-file=assets/.env
 ```
-- Build release APK:
-```
+
+* Release APK:
+
+```bash
 flutter build apk --dart-define-from-file=assets/.env
 ```
-- Static analysis:
-```
+
+* Static analysis:
+
+```bash
 flutter analyze
 ```
 
-# Flutter and Dart Version Used 
-```
-Dart SDK version: 3.8.1
-Flutter 3.32.8 • channel stable • https://github.com/flutter/flutter.git
-Framework • revision edada7c56e (13 days ago) • 2025-07-25 14:08:03 +0000
-Engine • revision ef0cd00091 (2 weeks ago) • 2025-07-24 12:23:50 -0700
-Tools • Dart 3.8.1 • DevTools 2.45.1
-```
-
 ## Data & Networking
-- `DioClient`:
-  - Configured timeouts.
-  - Debug logging only in `kDebugMode`.
-  - Retry-once for timeout errors (connection/receive/send).
-  - Transparent in-memory GET cache with a default 60s TTL to accelerate repeated requests.
-- Repositories:
-  - `BondsRepositoryImpl.getBonds({forceRefresh=false})`: soft in-memory cache with TTL and fallback on failure.
-  - `BondDetailRepositoryImpl.getBondDetail(isin, {forceRefresh=false})`: per‑ISIN soft cache with TTL and fallback.
+
+`DioClient` is configured with:
+
+* Connection & receive timeouts
+* Debug logging only in `kDebugMode`
+* Retry once on timeouts
+* In-memory GET cache (TTL: 60s)
+
+Repositories implement soft caching with TTL and `forceRefresh` flags for predictable UX.
 
 ## UI & UX
-- Bonds List (`Bonds Explorer`):
-  - Compact cards: brand logo, ISIN (last 4 digits emphasized), rating + company name, chevron.
-  - Instant client-side search; highlights matched substrings.
-  - “SUGGESTED RESULTS” or “SEARCH RESULTS” header based on context.
-- Bond Detail:
-  - Header with company logo/name, ISIN badge.
-  - Tabs: Bond Info, ISIN Analysis, Pros & Cons.
-  - Charts: EBITDA/Revenue line charts (fl_chart) with grid, tooltips, dynamic axis scaling, and responsive sizes.
+
+* **Bonds Explorer** screen: compact cards, fast local search, and clear CTA.
+* **Bond Detail**: logo header, ISIN badge, and three tabs for structured content.
+* Charts are responsive with adaptive axes and interactive tooltips.
 
 ## State Management
-- BLoC per feature (list and detail).
-- Events: load/refresh/search.
-- States: initial/loading/loaded/error + derived UI state.
-- List search is purely local (no network while typing).
+
+* BLoC per feature (list & detail).
+* Events: `Load`, `Refresh`, `Search`.
+* States: `Initial`, `Loading`, `Loaded`, `Error`.
 
 ## Performance Optimizations
-- Transport: retry-once on timeouts, GET cache with TTL, debug-only logging.
-- Repository: soft cache with TTL and error fallback.
-- UI: precomputed/responsive layouts and selective rebuilds.
-- Optional (easy to add): prefetch N details after list load for instant navigation.
+
+* Network-level caching & retry.
+* UI-level selective rebuilds and precomputed layouts.
+* Optional prefetch strategy available as an enhancement.
 
 ## Troubleshooting
-- AGP/Gradle warnings: upgrade Gradle/AGP as needed per Flutter tooling guidance.
-- No data: verify env variables are passed correctly (see [Environment & Configuration](#environment--configuration)).
-- Build errors on `.env`: ensure you’re using `--dart-define` flags; do not declare `.env` as an asset.
+
+* **AGP/Gradle warnings**: update Android Gradle Plugin per Flutter guidance.
+* **No data**: ensure `--dart-define` env variables are passed.
+* **APK install issues**: enable `Install unknown apps` on device.
 
 ## Contributing
-- Follow existing code style (readable, explicit types on public APIs, guard clauses, minimal nesting).
-- Keep UI responsive; prefer composition over deep widget trees.
-- Preserve architecture boundaries (domain/data/presentation) and BLoC state ownership.
+
+* Keep changes modular and well-tested.
+* Prefer composition over deep widget trees.
+* Respect the domain/data/presentation separation.
 
 ---
-This project is designed to be a clean, fast, and maintainable Flutter codebase for financial data exploration. If you need additional automation (prefetching, ETag/conditional requests, or CI scripts), open an issue/PR and we’ll extend it.
+
+## Changelog
+
+* **v1.0** — Initial production-ready release.
+
+## License
+
+This project is released under the **MIT License**.
+
+---
+
+> Need the README exported as a `README.md` file or committed to a branch? I can prepare the file for download or create a PR-ready patch. Want me to add release notes, screenshots, or a CI badge next?
