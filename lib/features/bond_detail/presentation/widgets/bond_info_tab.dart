@@ -57,25 +57,40 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
     final padding = isTablet ? 24.0 : 16.0;
     final spacing = isTablet ? 20.0 : 16.0;
     
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(padding),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Description
-          _buildDescriptionSection(context),
-          SizedBox(height: spacing),
-          
-          // Company Financials - EBITDA Chart (always show with mock data)
-          _buildFinancialsSection(context),
-          SizedBox(height: spacing),
-          
-          // Issuer Details
-          if (widget.bondDetail.issuerDetails != null) ...[
-            _buildIssuerDetailsSection(context),
-            SizedBox(height: spacing),
-          ],
-        ],
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(padding),
+            physics: const ClampingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight - (padding * 2),
+                maxWidth: constraints.maxWidth,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Description
+                    _buildDescriptionSection(context),
+                    SizedBox(height: spacing),
+                    
+                    // Company Financials - EBITDA Chart (always show with mock data)
+                    _buildFinancialsSection(context),
+                    SizedBox(height: spacing),
+                    
+                    // Issuer Details
+                    if (widget.bondDetail.issuerDetails != null) ...[
+                      _buildIssuerDetailsSection(context),
+                      SizedBox(height: spacing),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -83,16 +98,19 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
 
 
   Widget _buildDescriptionSection(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
+    
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isTablet ? 24 : 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            blurRadius: isTablet ? 12 : 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -103,33 +121,33 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(isTablet ? 10 : 8),
                 decoration: BoxDecoration(
                   color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(isTablet ? 10 : 8),
                 ),
                 child: Icon(
                   Icons.description_outlined,
                   color: Colors.blue[700],
-                  size: 20,
+                  size: isTablet ? 22 : 20,
                 ),
               ),
-              const SizedBox(width: 12),
-              const Text(
+              SizedBox(width: isTablet ? 14 : 12),
+              Text(
                 'Description',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: isTablet ? 20 : 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isTablet ? 18 : 16),
           Text(
             widget.bondDetail.description,
-            style: const TextStyle(
-              fontSize: 15,
+            style: TextStyle(
+              fontSize: isTablet ? 16 : 15,
               color: Colors.black87,
               height: 1.6,
             ),
@@ -140,6 +158,9 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
   }
 
   Widget _buildFinancialsSection(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
+    
     // Get data based on selected tab (EBITDA or Revenue)
     List<Map<String, dynamic>> chartData;
     
@@ -231,14 +252,17 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
     
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: EdgeInsets.symmetric(
+        horizontal: isTablet ? 20 : 16, 
+        vertical: isTablet ? 28 : 24,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            blurRadius: isTablet ? 12 : 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -246,52 +270,63 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with Toggle on same row
+          // Header with Toggle on same row - Responsive
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                'COMPANY FINANCIALS',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                  letterSpacing: 1.2,
+              Flexible(
+                flex: 3,
+                child: Text(
+                  'COMPANY FINANCIALS',
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width > 600 ? 16 : 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                    letterSpacing: MediaQuery.of(context).size.width > 600 ? 1.2 : 1.0,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              _buildToggleButton(),
+              const SizedBox(width: 8),
+              Flexible(
+                flex: 2,
+                child: _buildToggleButton(),
+              ),
             ],
           ),
           const SizedBox(height: 24),
           
-          // Chart with Y-axis labels
+          // Chart with Y-axis labels - Responsive
           SizedBox(
-            height: 240,
+            height: isTablet ? 280 : 240,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // Y-axis labels
+                // Y-axis labels - Responsive width
                 SizedBox(
-                  width: 40, // Reduced from 55 to save space
-                  height: 200,
+                  width: isTablet ? 50 : 40,
+                  height: isTablet ? 240 : 200,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: yAxisLabels.map((label) => _buildYAxisLabel(label)).toList(),
                   ),
                 ),
-                const SizedBox(width: 5), // Reduced from 10 to save space
+                SizedBox(width: isTablet ? 8 : 5),
                 
-                // Chart area
+                // Chart area - Responsive
                 Expanded(
                   child: SizedBox(
-                    height: 200,
+                    height: isTablet ? 240 : 200,
                     child: Stack(
-            children: [
-                        // Grid lines
+                      children: [
+                        // Grid lines - Responsive spacing
                         ...List.generate(5, (index) {
+                          final spacing = (isTablet ? 240 : 200) / 4;
                           return Positioned(
-                            top: index * 40.0,
+                            top: index * spacing,
                             left: 0,
                             right: 0,
                             child: Container(
@@ -301,7 +336,7 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
                           );
                         }),
                         
-                        // Bars with reduced spacing
+                        // Bars with responsive spacing
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -330,24 +365,24 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
             ),
           ),
           
-          // X-axis labels (months)
-          const SizedBox(height: 8),
+          // X-axis labels (months) - Responsive
+          SizedBox(height: isTablet ? 12 : 8),
           Padding(
-            padding: const EdgeInsets.only(left: 45),
+            padding: EdgeInsets.only(left: isTablet ? 58 : 45),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: chartData.map((data) {
                 return Text(
                   data['month'] as String,
-                style: TextStyle(
-                    fontSize: 12,
+                  style: TextStyle(
+                    fontSize: isTablet ? 13 : 12,
                     fontWeight: FontWeight.w400,
                     color: Colors.grey[500],
                   ),
                 );
               }).toList(),
-                ),
-              ),
+            ),
+          ),
             ],
           ),
     );
@@ -361,7 +396,11 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
     int index, 
     double maxValue
   ) {
-    const barHeight = 200.0;
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
+    final barHeight = isTablet ? 240.0 : 200.0;
+    final barWidthNormal = isTablet ? 12.0 : 10.0;
+    final barWidthSelected = isTablet ? 16.0 : 14.0;
     
     final baseBarHeight = (baseValue / maxValue) * barHeight;
     final topBarHeight = (topValue / maxValue) * barHeight;
@@ -382,7 +421,7 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
         key: _barKeys[index],
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          width: isSelected ? 14 : 10, // Slightly wider when selected
+          width: isSelected ? barWidthSelected : barWidthNormal,
           height: barHeight,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -390,17 +429,17 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
               if (_isRevenueSelected) ...[
                 // Revenue: Single solid blue bar
                 Container(
-                  width: isSelected ? 14 : 10,
+                  width: isSelected ? barWidthSelected : barWidthNormal,
                   height: totalBarHeight,
                   decoration: BoxDecoration(
                     color: isSelected 
                       ? Colors.blue[600]?.withOpacity(0.9)
                       : Colors.blue[600],
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(isTablet ? 5 : 4),
                     boxShadow: isSelected ? [
                       BoxShadow(
                         color: Colors.blue.withOpacity(0.3),
-                        blurRadius: 8,
+                        blurRadius: isTablet ? 10 : 8,
                         offset: const Offset(0, 2),
                       ),
                     ] : null,
@@ -411,20 +450,20 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
                 // Top bar (light blue) - represents values above 0.8 Cr
                 if (topBarHeight > 0)
                   Container(
-                    width: isSelected ? 14 : 10,
+                    width: isSelected ? barWidthSelected : barWidthNormal,
                     height: topBarHeight,
                     decoration: BoxDecoration(
                       color: isSelected 
                         ? Colors.blue[300]?.withOpacity(0.9)
                         : Colors.blue[200]?.withOpacity(0.7),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(2),
-                        topRight: Radius.circular(2),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(isTablet ? 3 : 2),
+                        topRight: Radius.circular(isTablet ? 3 : 2),
                       ),
                       boxShadow: isSelected ? [
                         BoxShadow(
                           color: Colors.blue.withOpacity(0.3),
-                          blurRadius: 8,
+                          blurRadius: isTablet ? 10 : 8,
                           offset: const Offset(0, 2),
                         ),
                       ] : null,
@@ -433,7 +472,7 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
                 // Bottom bar (black) - represents values up to 0.8 Cr
                 if (baseBarHeight > 0)
                   Container(
-                    width: isSelected ? 14 : 10,
+                    width: isSelected ? barWidthSelected : barWidthNormal,
                     height: baseBarHeight,
                     color: isSelected ? Colors.black87 : Colors.black,
                   ),
@@ -446,38 +485,64 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
   }
 
   Widget _buildTooltip(Map<String, dynamic> data) {
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
+    
     final month = data['month'] as String;
     final totalValue = data['totalValue'] as double;
     final baseValue = data['baseValue'] as double;
     final topValue = data['topValue'] as double;
     
-    // Calculate position based on selected bar index
-    final barWidth = 8.0;
-    final spacing = 16.0;
-    final totalBarWidth = barWidth + spacing;
-    final tooltipLeft = (_selectedBarIndex! * totalBarWidth) - 60; // Center the tooltip
+    // Calculate responsive positioning and sizing
+    final availableWidth = screenSize.width - (isTablet ? 120 : 80); // Account for padding
+    final maxTooltipWidth = isTablet ? 160.0 : 140.0;
+    final minTooltipWidth = isTablet ? 120.0 : 100.0;
+    final tooltipWidth = maxTooltipWidth.clamp(minTooltipWidth, availableWidth * 0.6);
+    
+    final barSpacing = availableWidth / 12; // 12 months
+    final tooltipLeft = (_selectedBarIndex! * barSpacing) - (tooltipWidth / 2);
+    
+    // Ensure tooltip stays within screen bounds with safe margins
+    final safeMargin = 15.0;
+    final clampedLeft = tooltipLeft.clamp(safeMargin, screenSize.width - tooltipWidth - safeMargin);
+    
+    // Prevent bottom overflow by adjusting top position
+    final chartHeight = isTablet ? 240.0 : 200.0;
+    final tooltipHeight = isTablet ? 
+      (_isRevenueSelected ? 80.0 : 120.0) : 
+      (_isRevenueSelected ? 70.0 : 100.0);
+    final maxTop = chartHeight - tooltipHeight - 20;
+    final safeTop = (isTablet ? 30.0 : 20.0).clamp(10.0, maxTop);
     
     return Positioned(
-      top: 20,
-      left: tooltipLeft,
+      top: safeTop,
+      left: clampedLeft,
       child: SlideTransition(
         position: _tooltipSlideAnimation,
         child: FadeTransition(
           opacity: _tooltipAnimation,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            width: tooltipWidth,
+            constraints: BoxConstraints(
+              maxWidth: tooltipWidth,
+              maxHeight: tooltipHeight,
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 16 : 12,
+              vertical: isTablet ? 12 : 8,
+            ),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.75),
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(isTablet ? 16 : 14),
               border: Border.all(
                 color: Colors.white.withOpacity(0.15),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: isTablet ? 20 : 16,
+                  offset: const Offset(0, 6),
                 ),
                 BoxShadow(
                   color: Colors.white.withOpacity(0.1),
@@ -492,67 +557,80 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
                 // Month name
                 Text(
                   _getFullMonthName(month),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.black87,
-                    fontSize: 16,
+                    fontSize: isTablet ? 16 : 14,
                     fontWeight: FontWeight.w600,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: isTablet ? 8 : 6),
                 // Total value
                 Text(
                   '₹${(totalValue / 100).toStringAsFixed(1)}Cr',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.black87,
-                    fontSize: 18,
+                    fontSize: isTablet ? 18 : 16,
                     fontWeight: FontWeight.w700,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
-                // Breakdown
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.circular(2),
+                // Breakdown - only show for EBITDA and if space allows
+                if (!_isRevenueSelected && tooltipWidth >= minTooltipWidth) ...[
+                  SizedBox(height: isTablet ? 6 : 4),
+                  // Use Wrap to prevent overflow on small screens
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: isTablet ? 4 : 2,
+                    runSpacing: isTablet ? 3 : 2,
+                    children: [
+                      _buildTooltipLegendItem(
+                        Colors.black87, 
+                        '₹${(baseValue / 100).toStringAsFixed(1)}Cr', 
+                        isTablet
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '₹${(baseValue / 100).toStringAsFixed(1)}Cr',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
+                      SizedBox(width: isTablet ? 6 : 4),
+                      _buildTooltipLegendItem(
+                        Colors.blue[400]!, 
+                        '₹${(topValue / 100).toStringAsFixed(1)}Cr', 
+                        isTablet
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.blue[400],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-          Text(
-                      '₹${(topValue / 100).toStringAsFixed(1)}Cr',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+  
+  Widget _buildTooltipLegendItem(Color color, String text, bool isTablet) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: isTablet ? 8 : 6,
+          height: isTablet ? 8 : 6,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(1),
+          ),
+        ),
+        SizedBox(width: isTablet ? 4 : 3),
+        Flexible(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: isTablet ? 11 : 9,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
               
@@ -579,21 +657,39 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
   }
 
   String _getFullMonthName(String shortMonth) {
-    final monthNames = {
-      'J': 'January',
-      'F': 'February', 
-      'M': 'March',
-      'A': 'April',
-      'M': 'May',
-      'J': 'June',
-      'J': 'July',
-      'A': 'August',
-      'S': 'September',
-      'O': 'October',
-      'N': 'November',
-      'D': 'December',
-    };
-    return monthNames[shortMonth] ?? shortMonth;
+    // Since we have duplicate single-letter abbreviations, we'll handle this differently
+    // The months come from the API in order, so we can use position/context
+    final monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    
+    // Find the month position based on the selected bar index
+    if (_selectedBarIndex != null && _selectedBarIndex! < monthNames.length) {
+      return monthNames[_selectedBarIndex!];
+    }
+    
+    // Fallback to basic mapping
+    switch (shortMonth) {
+      case 'J':
+        return 'January'; // Could be Jan, Jun, Jul - defaulting to Jan
+      case 'F':
+        return 'February';
+      case 'M':
+        return 'March'; // Could be Mar, May - defaulting to Mar
+      case 'A':
+        return 'April'; // Could be Apr, Aug - defaulting to Apr
+      case 'S':
+        return 'September';
+      case 'O':
+        return 'October';
+      case 'N':
+        return 'November';
+      case 'D':
+        return 'December';
+      default:
+        return shortMonth;
+    }
   }
 
   List<String> _generateYAxisLabels(double maxValue) {
@@ -623,8 +719,19 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
   }
 
   Widget _buildToggleButton() {
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
+    final isVerySmall = screenSize.width < 360;
+    
+    final horizontalPadding = isVerySmall ? 8.0 : (isTablet ? 16.0 : 12.0);
+    final verticalPadding = isVerySmall ? 5.0 : (isTablet ? 8.0 : 6.0);
+    final fontSize = isVerySmall ? 10.0 : (isTablet ? 13.0 : 11.0);
+    
     return Container(
-      padding: const EdgeInsets.all(3),
+      constraints: BoxConstraints(
+        maxWidth: screenSize.width * 0.4, // Never exceed 40% of screen width
+      ),
+      padding: EdgeInsets.all(isVerySmall ? 2 : 3),
       decoration: BoxDecoration(
         color: Colors.grey[100],
         borderRadius: BorderRadius.circular(20),
@@ -633,79 +740,98 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
           width: 1,
         ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _isRevenueSelected = false;
-                _selectedBarIndex = null; // Reset selection when switching tabs
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: _isRevenueSelected ? Colors.transparent : Colors.black87,
-                borderRadius: BorderRadius.circular(17),
-                boxShadow: _isRevenueSelected ? null : [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 2,
-                    offset: const Offset(0, 1),
+      child: IntrinsicHeight(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isRevenueSelected = false;
+                    _selectedBarIndex = null;
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding, 
+                    vertical: verticalPadding,
                   ),
-                ],
-              ),
-              child: Text(
-                'EBITDA',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: _isRevenueSelected ? Colors.grey[600] : Colors.white,
+                  decoration: BoxDecoration(
+                    color: _isRevenueSelected ? Colors.transparent : Colors.black87,
+                    borderRadius: BorderRadius.circular(17),
+                    boxShadow: _isRevenueSelected ? null : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    'EBITDA',
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w600,
+                      color: _isRevenueSelected ? Colors.grey[600] : Colors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _isRevenueSelected = true;
-                _selectedBarIndex = null; // Reset selection when switching tabs
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: _isRevenueSelected ? Colors.black87 : Colors.transparent,
-                borderRadius: BorderRadius.circular(17),
-                boxShadow: _isRevenueSelected ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 2,
-                    offset: const Offset(0, 1),
+            Flexible(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isRevenueSelected = true;
+                    _selectedBarIndex = null;
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding, 
+                    vertical: verticalPadding,
                   ),
-                ] : null,
-              ),
-              child: Text(
-                'Revenue',
-            style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: _isRevenueSelected ? Colors.white : Colors.grey[600],
+                  decoration: BoxDecoration(
+                    color: _isRevenueSelected ? Colors.black87 : Colors.transparent,
+                    borderRadius: BorderRadius.circular(17),
+                    boxShadow: _isRevenueSelected ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ] : null,
+                  ),
+                  child: Text(
+                    'Revenue',
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w600,
+                      color: _isRevenueSelected ? Colors.white : Colors.grey[600],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildYAxisLabel(String label) {
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
+    
     return Text(
       label,
       style: TextStyle(
-        fontSize: 11,
+        fontSize: isTablet ? 12 : 11,
         color: Colors.grey[500],
         fontWeight: FontWeight.w400,
       ),
@@ -714,17 +840,19 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
 
   Widget _buildIssuerDetailsSection(BuildContext context) {
     final issuer = widget.bondDetail.issuerDetails!;
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width > 600;
     
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(isTablet ? 24 : 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            blurRadius: isTablet ? 12 : 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -735,61 +863,61 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(isTablet ? 10 : 8),
                 decoration: BoxDecoration(
                   color: Colors.purple[50],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(isTablet ? 10 : 8),
                 ),
                 child: Icon(
-                Icons.business_center,
+                  Icons.business_center,
                   color: Colors.purple[700],
-                  size: 20,
+                  size: isTablet ? 22 : 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: isTablet ? 14 : 12),
               Text(
                 'Issuer Details',
                 style: TextStyle(
-                  fontSize: MediaQuery.of(context).size.width > 600 ? 20 : 18,
+                  fontSize: isTablet ? 20 : 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: isTablet ? 24 : 20),
           
           if (issuer.issuerName != null) ...[
             _buildDetailRow('Issuer Name', issuer.issuerName!),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 14 : 12),
           ],
           if (issuer.typeOfIssuer != null) ...[
             _buildDetailRow('Type of Issuer', issuer.typeOfIssuer!),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 14 : 12),
           ],
           if (issuer.sector != null) ...[
             _buildDetailRow('Sector', issuer.sector!),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 14 : 12),
           ],
           if (issuer.industry != null) ...[
             _buildDetailRow('Industry', issuer.industry!),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 14 : 12),
           ],
           if (issuer.issuerNature != null) ...[
             _buildDetailRow('Issuer Nature', issuer.issuerNature!),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 14 : 12),
           ],
           if (issuer.cin != null) ...[
             _buildDetailRow('Corporate Identity Number (CIN)', issuer.cin!),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 14 : 12),
           ],
           if (issuer.leadManager != null) ...[
             _buildDetailRow('Lead Manager', issuer.leadManager!),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 14 : 12),
           ],
           if (issuer.registrar != null) ...[
             _buildDetailRow('Registrar', issuer.registrar!),
-            const SizedBox(height: 12),
+            SizedBox(height: isTablet ? 14 : 12),
           ],
           if (issuer.debentureTrustee != null) ...[
             _buildDetailRow('Debenture Trustee', issuer.debentureTrustee!),
@@ -802,12 +930,39 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
   Widget _buildDetailRow(String label, String value) {
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
+    final isVerySmall = screenSize.width < 360;
+    
+    // Responsive layout: stack vertically on very small screens
+    if (isVerySmall) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.black87,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      );
+    }
     
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: isTablet ? 180 : 140,
+        Flexible(
+          flex: isTablet ? 2 : 3,
           child: Text(
             label,
             style: TextStyle(
@@ -815,10 +970,13 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
               color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        SizedBox(width: isTablet ? 20 : 16),
-        Expanded(
+        SizedBox(width: isTablet ? 20 : 12),
+        Flexible(
+          flex: isTablet ? 3 : 4,
           child: Text(
             value,
             style: TextStyle(
@@ -826,6 +984,8 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
               color: Colors.black87,
               fontWeight: FontWeight.w500,
             ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
