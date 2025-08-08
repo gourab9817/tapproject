@@ -15,7 +15,7 @@ A production-grade **Flutter** application to explore corporate bonds, view issu
 
 * [TapInc v1.0 (APK) — Google Drive](https://drive.google.com/file/d/11Q5OUrMKvYqtKeEFzw8BvlDpPTx1ueop/view?usp=sharing)
 
-> ⚠️ Install at your own risk: enable `Install unknown apps` for your device if needed.
+
 
 ---
 
