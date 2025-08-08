@@ -37,7 +37,7 @@ class BondCard extends StatelessWidget {
           padding: EdgeInsets.all(padding),
           child: Row(
             children: [
-              // INFRA. MARKET Logo (larger and perfectly circular)
+              // Company Logo from API
               Container(
                 width: isTablet ? 72 : 58,
                 height: isTablet ? 72 : 58,
@@ -49,28 +49,57 @@ class BondCard extends StatelessWidget {
                     width: 2,
                   ),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'INFRA.',
-                        style: TextStyle(
-                          fontSize: isTablet ? 11 : 9,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
+                child: ClipOval(
+                  child: bond.logo.isNotEmpty
+                      ? Image.network(
+                          bond.logo,
+                          width: isTablet ? 68 : 54,
+                          height: isTablet ? 68 : 54,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: SizedBox(
+                                width: (isTablet ? 68 : 54) * 0.5,
+                                height: (isTablet ? 68 : 54) * 0.5,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.blue[300]!,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: isTablet ? 68 : 54,
+                              height: isTablet ? 68 : 54,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.account_balance,
+                                color: Colors.grey[400],
+                                size: isTablet ? 28 : 24,
+                              ),
+                            );
+                          },
+                        )
+                      : Container(
+                          width: isTablet ? 68 : 54,
+                          height: isTablet ? 68 : 54,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.account_balance,
+                            color: Colors.grey[400],
+                            size: isTablet ? 28 : 24,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'MARKET',
-                        style: TextStyle(
-                          fontSize: isTablet ? 11 : 9,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               
