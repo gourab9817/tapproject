@@ -8,15 +8,12 @@
 
 A production-grade **Flutter** application to explore corporate bonds, view issuer details, and analyze issuer financials. The app is built for performance, clean architecture, and an outstanding mobile experience.
 
-<p align="center">
-  <img alt="TapInc screenshot" src=".github/screenshot-placeholder.png" style="max-width:420px; width:100%; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12)">
-</p>
 
 ## 📥 Quick download — APK
 
 **Download the latest release APK:**
 
-* [TapInc v1.0 (APK) — Google Drive]([https://drive.google.com/file/d/1HfPr4XaAMWZYSaYXG3_gjD985YssxXmq/view?usp=drive_link](https://drive.google.com/file/d/11Q5OUrMKvYqtKeEFzw8BvlDpPTx1ueop/view?usp=sharing))
+* [TapInc v1.0 (APK) — Google Drive](https://drive.google.com/file/d/11Q5OUrMKvYqtKeEFzw8BvlDpPTx1ueop/view?usp=sharing)
 
 > ⚠️ Install at your own risk: enable `Install unknown apps` for your device if needed.
 
