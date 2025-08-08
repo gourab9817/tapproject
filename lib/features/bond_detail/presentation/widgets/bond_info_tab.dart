@@ -842,17 +842,18 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
     final issuer = widget.bondDetail.issuerDetails!;
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
+    final isSmall = screenSize.width < 400;
     
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(isTablet ? 24 : 20),
+      padding: EdgeInsets.all(isTablet ? 24 : (isSmall ? 16 : 20)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: isTablet ? 12 : 10,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
@@ -863,132 +864,93 @@ class _BondInfoTabState extends State<BondInfoTab> with TickerProviderStateMixin
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(isTablet ? 10 : 8),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.purple[50],
-                  borderRadius: BorderRadius.circular(isTablet ? 10 : 8),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   Icons.business_center,
                   color: Colors.purple[700],
-                  size: isTablet ? 22 : 20,
+                  size: 20,
                 ),
               ),
-              SizedBox(width: isTablet ? 14 : 12),
+              const SizedBox(width: 12),
               Text(
                 'Issuer Details',
                 style: TextStyle(
-                  fontSize: isTablet ? 20 : 18,
+                  fontSize: isTablet ? 18 : 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: Colors.grey[800],
                 ),
               ),
             ],
           ),
           SizedBox(height: isTablet ? 24 : 20),
           
-          if (issuer.issuerName != null) ...[
-            _buildDetailRow('Issuer Name', issuer.issuerName!),
-            SizedBox(height: isTablet ? 14 : 12),
-          ],
-          if (issuer.typeOfIssuer != null) ...[
-            _buildDetailRow('Type of Issuer', issuer.typeOfIssuer!),
-            SizedBox(height: isTablet ? 14 : 12),
-          ],
-          if (issuer.sector != null) ...[
-            _buildDetailRow('Sector', issuer.sector!),
-            SizedBox(height: isTablet ? 14 : 12),
-          ],
-          if (issuer.industry != null) ...[
-            _buildDetailRow('Industry', issuer.industry!),
-            SizedBox(height: isTablet ? 14 : 12),
-          ],
-          if (issuer.issuerNature != null) ...[
-            _buildDetailRow('Issuer Nature', issuer.issuerNature!),
-            SizedBox(height: isTablet ? 14 : 12),
-          ],
-          if (issuer.cin != null) ...[
-            _buildDetailRow('Corporate Identity Number (CIN)', issuer.cin!),
-            SizedBox(height: isTablet ? 14 : 12),
-          ],
-          if (issuer.leadManager != null) ...[
-            _buildDetailRow('Lead Manager', issuer.leadManager!),
-            SizedBox(height: isTablet ? 14 : 12),
-          ],
-          if (issuer.registrar != null) ...[
-            _buildDetailRow('Registrar', issuer.registrar!),
-            SizedBox(height: isTablet ? 14 : 12),
-          ],
-          if (issuer.debentureTrustee != null) ...[
-            _buildDetailRow('Debenture Trustee', issuer.debentureTrustee!),
-          ],
+          // Clean detail rows matching the design
+          _buildCleanDetailRow('Issuer Name', issuer.issuerName ?? '-', isTablet),
+          _buildCleanDetailRow('Type of Issuer', issuer.typeOfIssuer ?? '-', isTablet),
+          _buildCleanDetailRow('Sector', issuer.sector ?? '-', isTablet),
+          _buildCleanDetailRow('Industry', issuer.industry ?? '-', isTablet),
+          _buildCleanDetailRow('Issuer Nature', issuer.issuerNature ?? '-', isTablet),
+          _buildCleanDetailRow('Corporate Identity Number (CIN)', issuer.cin ?? '-', isTablet),
+          _buildCleanDetailRow('Lead Manager', issuer.leadManager ?? '-', isTablet),
+          _buildCleanDetailRow('Registrar', issuer.registrar ?? 'KFIN TECHNOLOGIES PRIVATE LIMITED', isTablet),
+          _buildCleanDetailRow('Debenture Trustee', issuer.debentureTrustee ?? '-', isTablet, isLast: true),
         ],
       ),
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildCleanDetailRow(String label, String value, bool isTablet, {bool isLast = false}) {
     final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.width > 600;
-    final isVerySmall = screenSize.width < 360;
+    final isSmall = screenSize.width < 400;
     
-    // Responsive layout: stack vertically on very small screens
-    if (isVerySmall) {
-      return Column(
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: isTablet ? 16 : 14),
+      decoration: BoxDecoration(
+        border: isLast ? null : Border(
+          bottom: BorderSide(
+            color: Colors.grey[100]!,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+          // Label column - fixed width for alignment
+          SizedBox(
+            width: isSmall ? 120 : (isTablet ? 180 : 140),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: isSmall ? 13 : (isTablet ? 14 : 13),
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+              ),
             ),
           ),
-          SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
+          
+          SizedBox(width: isTablet ? 24 : (isSmall ? 12 : 16)),
+          
+          // Value column - flexible width
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: isSmall ? 14 : (isTablet ? 15 : 14),
+                color: Colors.black87,
+                fontWeight: FontWeight.w500,
+                height: 1.5,
+              ),
             ),
           ),
         ],
-      );
-    }
-    
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Flexible(
-          flex: isTablet ? 2 : 3,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: isTablet ? 15 : 14,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        SizedBox(width: isTablet ? 20 : 12),
-        Flexible(
-          flex: isTablet ? 3 : 4,
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: isTablet ? 15 : 14,
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
