@@ -15,7 +15,11 @@ A production-grade **Flutter** application to explore corporate bonds, view issu
 
 * [TapInc v1.0 (APK) — Google Drive](https://drive.google.com/file/d/11Q5OUrMKvYqtKeEFzw8BvlDpPTx1ueop/view?usp=sharing)
 
+---
 
+## 🎥 Demo Video
+
+[![Watch the demo](https://img.youtube.com/vi/js2nLuFyz1k/0.jpg)](https://youtube.com/shorts/js2nLuFyz1k?feature=shared)
 
 ---
 
@@ -48,7 +52,7 @@ TapInc helps analysts and investors quickly browse corporate bonds, read issuer-
 
 * Polished, responsive UI for phones and tablets.
 * Instant local search with highlighted matches (no extra network while typing).
-* Interactive charts with tooltips, gridlines, and adaptive Y‑axis scaling.
+* Interactive charts with tooltips, gridlines, and adaptive Y-axis scaling.
 * Robust networking (retry, caching) and clear error handling.
 
 ## Features
@@ -71,132 +75,3 @@ This keeps the app maintainable and easy to test.
 
 ## Directory Layout
 
-```
-lib/
-  core/
-    constants/
-    di/
-    error/
-    network/
-  features/
-    bonds_list/
-      data/
-      domain/
-      presentation/
-    bond_detail/
-      data/
-      domain/
-      presentation/
-  main.dart
-```
-
-## Tech Stack
-
-* **Flutter** (stable)
-* **Dart**
-* `flutter_bloc` for state management
-* `dio` for HTTP with logging & retry
-* `fl_chart` for charts
-* `injectable` + `get_it` for DI
-
-## Environment & Configuration
-
-Sensitive URLs are injected at build time using `--dart-define`. Do not commit secrets.
-
-Create a file `assets/.env` with:
-
-```
-BASE_URL=
-BONDS_LIST_URL=
-BOND_DETAIL_URL=
-```
-
-Run app (development):
-
-```bash
-flutter run --dart-define-from-file=assets/.env
-```
-
-> Tip: If you'd like `flutter run` to run without extra flags, create a short script (`run.sh` / `run.bat`) in your repo that calls the above command.
-
-## Getting Started
-
-1. Install Flutter & Dart (see official docs).
-2. Run: `flutter pub get`.
-3. Set env vars in `assets/.env`.
-4. Launch on device/emulator.
-
-## Run, Build, and Analyze
-
-* Debug run:
-
-```bash
-flutter run --dart-define-from-file=assets/.env
-```
-
-* Release APK:
-
-```bash
-flutter build apk --dart-define-from-file=assets/.env
-```
-
-* Static analysis:
-
-```bash
-flutter analyze
-```
-
-## Data & Networking
-
-`DioClient` is configured with:
-
-* Connection & receive timeouts
-* Debug logging only in `kDebugMode`
-* Retry once on timeouts
-* In-memory GET cache (TTL: 60s)
-
-Repositories implement soft caching with TTL and `forceRefresh` flags for predictable UX.
-
-## UI & UX
-
-* **Bonds Explorer** screen: compact cards, fast local search, and clear CTA.
-* **Bond Detail**: logo header, ISIN badge, and three tabs for structured content.
-* Charts are responsive with adaptive axes and interactive tooltips.
-
-## State Management
-
-* BLoC per feature (list & detail).
-* Events: `Load`, `Refresh`, `Search`.
-* States: `Initial`, `Loading`, `Loaded`, `Error`.
-
-## Performance Optimizations
-
-* Network-level caching & retry.
-* UI-level selective rebuilds and precomputed layouts.
-* Optional prefetch strategy available as an enhancement.
-
-## Troubleshooting
-
-* **AGP/Gradle warnings**: update Android Gradle Plugin per Flutter guidance.
-* **No data**: ensure `--dart-define` env variables are passed.
-* **APK install issues**: enable `Install unknown apps` on device.
-
-## Contributing
-
-* Keep changes modular and well-tested.
-* Prefer composition over deep widget trees.
-* Respect the domain/data/presentation separation.
-
----
-
-## Changelog
-
-* **v1.0** — Initial production-ready release.
-
-## License
-
-This project is released under the **MIT License**.
-
----
-
-> Need the README exported as a `README.md` file or committed to a branch? I can prepare the file for download or create a PR-ready patch. Want me to add release notes, screenshots, or a CI badge next?
